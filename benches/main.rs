@@ -2,6 +2,17 @@ use criterion::*;
 use sieve_of_eratosthenes_rs::*;
 use std::time::Duration;
 
+macro_rules! bench_primes {
+    ($g:expr, $n:expr => {$($name:expr, $f:expr;)*}) => {
+        $(
+            let name = format!("{}", $name);
+            $g.bench_with_input(BenchmarkId::new(name, $n), &$n, |b, &n| {
+                b.iter(|| $f(n).any(|x| x == 0))
+            });
+        )*
+    };
+}
+
 fn bench_primes(c: &mut Criterion) {
     #[rustfmt::skip]
     let tests = [
@@ -10,30 +21,20 @@ fn bench_primes(c: &mut Criterion) {
         (100,       5,   1_800),
         (1_000,     10,  1_400),
         (10_000,    30,  1_000),
-        (100_000,   180, 0_800),
-        (1_000_000, 280, 0_400),
+        (100_000,   180, 800),
+        (1_000_000, 250, 150),
     ];
 
-    // let tests = &tests[..];
-    // let tests = &tests[0..3];
-    // let tests = &tests[3..4];
-    // let tests = &tests[4..];
-    let tests = &tests[5..];
-
     let mut group = c.benchmark_group("primes");
-    for &(n, time, samples) in tests {
+    for &(n, time, samples) in tests.iter() {
         group
             .sample_size(samples)
             .measurement_time(Duration::from_secs(time));
 
-        group.bench_with_input(BenchmarkId::new("functional::primes", n), &n, |b, &n| {
-            b.iter(|| functional::primes(n).any(|x| x == 0))
-        });
-        group.bench_with_input(BenchmarkId::new("basic::primes", n), &n, |b, &n| {
-            b.iter(|| basic::primes(n).any(|x| x == 0))
-        });
-        group.bench_with_input(BenchmarkId::new("bitpacked::primes", n), &n, |b, &n| {
-            b.iter(|| bitpacked::primes(n).any(|x| x == 0))
+        bench_primes!(group, n => {
+            "functional", functional::primes;
+            "basic", basic::primes;
+            "bitpacked", bitpacked::primes;
         });
     }
     group.finish();

@@ -57,7 +57,7 @@ Benchmark results:
 | 1,000     | 3.6us | 2.7us     | 1.7us      |
 | 10,000    | 42us  | 25us      | 16us       |
 | 100,000   | 400us | 275us     | 279us      |
-| 1,000,000 |       |           |            |
+| 1,000,000 | 6.6ms | 7.0ms     | 2.3ms      |
 
 Benching was done with
 [crieterion.rs](https://github.com/bheisler/criterion.rs):
