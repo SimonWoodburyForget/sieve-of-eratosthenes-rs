@@ -5,7 +5,6 @@ authors = ["Simon <simonwoodburyforget@gmail.com>"]
 edition = "2018"
 license = "MPL"
 
-
 [dependencies]
 criterion = "0.3"
 

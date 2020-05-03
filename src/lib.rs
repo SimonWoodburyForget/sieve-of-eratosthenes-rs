@@ -1,30 +1,30 @@
 pub mod functional {
-    #[inline(always)]
+    #[inline]
     pub fn primes(n: usize) -> impl Iterator<Item = usize> {
-        const OFFSET: usize = 2;
-        if n < OFFSET {
+        const START: usize = 2;
+        if n < START {
             Vec::new()
         } else {
-            let sieve = vec![true; n + 1 - OFFSET];
+            let mut is_prime = vec![true; n + 1 - START];
             let limit = (n as f64).sqrt() as usize;
-            (OFFSET..limit + 1).fold(sieve, |mut sieve, i| {
-                let mut it = sieve[i - OFFSET..].iter_mut().step_by(i);
+            for i in START..limit + 1 {
+                let mut it = is_prime[i - START..].iter_mut().step_by(i);
                 if let Some(true) = it.next() {
-                    it.for_each(|p| *p = false);
+                    it.for_each(|x| *x = false);
                 }
-                sieve
-            })
+            }
+            is_prime
         }
         .into_iter()
         .enumerate()
-        .filter_map(|(e, b)| if b { Some(e + OFFSET) } else { None })
+        .filter_map(|(e, b)| if b { Some(e + START) } else { None })
     }
 }
 
 pub mod basic {
     use std::iter::empty;
 
-    #[inline(always)]
+    #[inline]
     pub fn primes(limit: usize) -> Box<dyn Iterator<Item = usize>> {
         if limit < 2 {
             return Box::new(empty());
@@ -59,7 +59,7 @@ pub mod basic {
 pub mod bitpacked {
     use std::iter::{empty, once};
 
-    #[inline(always)]
+    #[inline]
     pub fn primes(limit: usize) -> Box<dyn Iterator<Item = usize>> {
         if limit < 3 {
             return if limit < 2 {
